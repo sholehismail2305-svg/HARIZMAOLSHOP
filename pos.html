@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>HARIZMA ONLINE</title>
+<meta name="theme-color" content="#0f766e">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="HARIZMA">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
+<style>
+:root{--g:#0f766e;--b:#dfe5e0;--t:#1d2b22}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;font:15px system-ui,sans-serif;color:var(--t);background:#f3f8f8;padding-bottom:46px}
+body.auth-locked{padding-bottom:0}body.auth-locked #nav,body.auth-locked #jam{display:none}body.auth-locked main{min-height:calc(100vh - 70px)}
+header{background:var(--g);color:#fff;padding:12px 16px;font:700 20px system-ui;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center}
+nav{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--b);display:flex;overflow-x:auto}
+nav a{padding:12px 13px;white-space:nowrap;cursor:pointer}nav a.on{color:var(--g);border-bottom:3px solid var(--g);font-weight:600}
+main{max-width:1200px;margin:auto;padding:14px}
+footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--b);text-align:center;padding:10px 10px calc(10px + env(safe-area-inset-bottom,0px));font-size:13px}
+.card{background:#fff;border:1px solid var(--b);border-radius:10px;padding:14px;margin-bottom:14px}
+h2{margin:0 0 10px;font-size:18px}.mut{color:#6b7a70}
+button{background:var(--g);color:#fff;border:0;border-radius:6px;padding:8px 12px;cursor:pointer;font-size:14px;margin:2px}
+button.alt{background:#e6ebe7;color:var(--t)}button.bad{background:#b3261e}
+label{display:block;margin:8px 0;font-size:13px;color:#46554b}
+input,select,textarea{width:100%;padding:8px;border:1px solid #c5cec8;border-radius:6px;font:inherit;font-size:16px;margin-top:3px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0 12px}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse}
+th,td{padding:8px;border-bottom:1px solid var(--b);text-align:left;font-size:14px;vertical-align:top}
+th{background:#e8f3f2;white-space:nowrap}td.r,th.r{text-align:right}
+.warn{background:#fff4d6;border:1px solid #e8c766;border-radius:8px;padding:10px;margin:8px 0}
+.low{background:#fff8e6}.stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.stat div{background:#e8f3f2;border-radius:8px;padding:10px}.stat b{display:block;font-size:18px;margin-top:4px}
+.modal{position:fixed;inset:0;background:#0007;display:flex;align-items:center;justify-content:center;z-index:20;padding:10px}
+.box{background:#fff;border-radius:10px;padding:16px;width:100%;max-width:460px;max-height:92vh;overflow:auto}
+.toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:var(--g);color:#fff;padding:10px 16px;border-radius:8px;z-index:30;max-width:90%}
+.toast.err{background:#b3261e}
+.pos{display:grid;grid-template-columns:1fr 390px;gap:14px;align-items:start}.pos>.card{margin:0}
+.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:10px;margin-top:10px;max-height:calc(100vh - 250px);overflow:auto;padding:2px}
+.tile{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;background:#fff;color:var(--t);border:2px solid var(--b);border-radius:12px;padding:12px 6px;margin:0;min-height:130px;transition:.15s;font-size:14px;touch-action:manipulation}
+.tile .ic{font-size:26px}.tile .hg{color:var(--g);font-weight:700}.tile small{color:#6b7a70}
+.tile .foto{width:100%;height:68px;object-fit:cover;border-radius:4px}
+.scanner-video{display:block;width:100%;max-height:60vh;background:#111;border-radius:6px}
+.tile.in{border-color:var(--g);background:#f0fdfa}.tile.flash{background:#99f6e4;transform:scale(.94)}.tile:disabled{opacity:.4}.bd{position:absolute;top:6px;right:6px;background:var(--g);color:#fff;border-radius:99px;min-width:22px;padding:1px 6px;font-size:12px}.bd:empty{display:none}
+#np{position:sticky;top:52px}#np .g{grid-template-columns:1fr 1fr}
+.ci{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--b)}
+.cn{min-width:0}.cn small{display:block}.qc{display:flex;align-items:center;flex-shrink:0}
+.qc input{width:46px;text-align:center;margin:0 2px;padding:6px 2px}.qc button{padding:6px 10px}
+#cart{max-height:40vh;overflow:auto}.tot{display:flex;justify-content:space-between;font-size:19px;padding:10px 0;position:sticky;bottom:0;background:#fff}
+.acts{display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:8px}.acts button{margin:0;padding:12px 6px}
+.mb{display:none}
+@media(max-width:800px){.pos{grid-template-columns:1fr}.pg{max-height:52vh}#np{position:static}
+ .mb{display:flex;position:fixed;left:10px;right:10px;bottom:56px;background:var(--g);color:#fff;border-radius:10px;padding:12px 14px;justify-content:space-between;z-index:6;box-shadow:0 2px 8px #0004}}
+@media print{body>*:not(.modal){display:none!important}.modal{position:static;background:none}.noprint{display:none}}
+@media print{body.thermal-print .modal{display:block;padding:0}.thermal-print .nota-box{width:80mm;max-width:none;max-height:none;overflow:visible;margin:0 auto;border:0;border-radius:0;padding:3mm}.thermal-58 .nota-box{width:58mm}}
+</style>
+</head>
+<body>
+
+<header>
+  <span>🌿 HARIZMA ONLINE</span>
+  <span id="sessionActions"></span>
+  <button id="ins" class="alt" hidden>📲 Instal Aplikasi</button>
+</header>
+
+<nav id="nav"></nav>
+<main id="main"></main>
+<footer id="jam"></footer>
+
+<script>
+
+const DB = {
+  daftar: ['produk', 'pelanggan', 'pengiriman', 'pengiriman_item', 'pembelian', 'pembayaran', 'usaha'],
+  kunci: function(namaTabel) { return 'harizma_' + UID + '_' + namaTabel; },
+  ambil: function(namaTabel) {
+    if (!this.daftar.includes(namaTabel)) return [];
+    const data = localStorage.getItem(this.kunci(namaTabel));
+    return data ? JSON.parse(data) : [];
+  },
+  simpan: function(namaTabel, isiData) {
+    if (!this.daftar.includes(namaTabel) || !Array.isArray(isiData)) throw new Error('Tabel atau format data tidak valid');
+    const payload = JSON.stringify(isiData);
+    localStorage.setItem(this.kunci(namaTabel), payload);
+    if (cloudReady && !applyingCloud) {
+      const pending = bacaPending();
+      const sudahAntre = Object.prototype.hasOwnProperty.call(pending, namaTabel);
+      pending[namaTabel] = {
+        payload,
+        version: sudahAntre ? pending[namaTabel].version : (cloudVersions[namaTabel] ?? null)
+      };
+      localStorage.setItem(kunciPending(), JSON.stringify(pending));
+      jadwalkanSinkronisasi();
+    }
+  },
+  inisialisasi: function() {
+    if (!this.ambil('usaha').length) {
+      this.simpan('usaha', [{ nama: 'HARIZMA ONLINE', alamat: '', kontak: '' }]);
+    }
+    if (!this.ambil('produk').length) {
+      this.simpan('produk', [
+        { id: 'p1', kode: 'BRG001', nama: 'Contoh Barang', harga_beli: 50000, harga_jual: 65000, stok: 100, stok_min: 10, kadaluarsa: '', keterangan: '' }
+      ]);
+    }
+    if (!this.ambil('pelanggan').length) {
+      this.simpan('pelanggan', [
+        { id: 'pl1', nama_toko: 'Toko Contoh', pemilik: 'Budi', alamat: 'Wonogiri', telepon: '08123456789', keterangan: '' }
+      ]);
+    }
+  }
+};
+
+let UID = 'guest', cloudClient = null, cloudUser = null, cloudReady = false,
+  applyingCloud = false, cloudTimer = null, cloudSubscription = null, cloudVersions = {};
+
+
+const $ = s => document.querySelector(s);
+const rp = n => 'Rp ' + Number(n||0).toLocaleString('id-ID');
+const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const hari = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+const tg = d => d ? new Date(d + 'T00:00').toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' }) : '-';
+const sum = (a, f) => a.reduce((s, x) => s + Number(f(x) || 0), 0);
+
+let D = {}, cart = [], qs = '', sibuk = false, cur = 'kirim',
+  kf = { a: hari().slice(0, 8) + '01', z: hari() }, rf = { q:'', j:'', a:'', z:'' }, scanner = null;
+
+const toast = (m, e) => {
+  const t = document.createElement('div');
+  t.className = 'toast' + (e ? ' err' : '');
+  t.textContent = m;
+  document.body.append(t);
+  setTimeout(() => t.remove(), 3500);
+};
+
+const kunciPending = () => 'harizma_' + UID + '_pending';
+const kunciVersi = () => 'harizma_' + UID + '_versions';
+function simpanVersi() { localStorage.setItem(kunciVersi(), JSON.stringify(cloudVersions)); }
+function bacaPending() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(kunciPending()) || '{}'), pending = {};
+    for (const [name, value] of Object.entries(saved)) {
+      if (typeof value == 'string') pending[name] = { payload: value, version: null };
+      else if (value && typeof value.payload == 'string') pending[name] = value;
+    }
+    return pending;
+  }
+  catch { return {}; }
+}
+function validasiRows(name, rows) {
+  if (!DB.daftar.includes(name) || !Array.isArray(rows) || rows.length > 50000) throw new Error(`Data ${name} tidak valid`);
+  for (const row of rows) {
+    if (!row || typeof row != 'object' || Array.isArray(row)) throw new Error(`Baris ${name} tidak valid`);
+    if (row.id != null && !/^[A-Za-z0-9._-]{1,100}$/.test(String(row.id))) throw new Error(`ID ${name} tidak valid`);
+    if (name == 'produk' && row.foto && (!String(row.foto).startsWith('data:image/jpeg;base64,') || row.foto.length > 1000000)) throw new Error('Foto produk dalam data tidak valid');
+  }
+  return rows;
+}
+function statusSinkronisasi(teks, error = false) {
+  const el = $('#syncState');
+  if (!el) return;
+  el.textContent = teks;
+  el.style.color = error ? '#b3261e' : 'inherit';
+  const conflict = $('#resolveConflict');
+  if (conflict) conflict.hidden = !teks.startsWith('Konflik data');
+}
+function jadwalkanSinkronisasi() {
+  statusSinkronisasi('Menunggu pengiriman ke server…');
+  clearTimeout(cloudTimer);
+  cloudTimer = setTimeout(() => { cloudFlush(); }, 500);
+}
+let cloudInFlight = null, cloudAgain = false;
+function cloudFlush() {
+  if (cloudInFlight) { cloudAgain = true; return cloudInFlight; }
+  cloudInFlight = cloudFlushQueue().finally(() => {
+    cloudInFlight = null;
+    if (cloudAgain) { cloudAgain = false; jadwalkanSinkronisasi(); }
+  });
+  return cloudInFlight;
+}
+async function cloudFlushQueue() {
+  const pending = bacaPending();
+  const namaTabel = Object.keys(pending).filter(name => DB.daftar.includes(name));
+  if (!cloudReady || !cloudClient || !cloudUser || !namaTabel.length) return !namaTabel.length;
+  statusSinkronisasi('Menyimpan ke server…');
+  try {
+    for (const name of namaTabel) {
+      const entry = pending[name];
+      const { data, error } = await cloudClient.rpc('save_app_data', {
+        p_table_name: name,
+        p_payload: JSON.parse(entry.payload),
+        p_expected_version: entry.version
+      });
+      if (error) throw error;
+      const savedVersion = Number(data);
+      cloudVersions[name] = savedVersion;
+      simpanVersi();
+      const latest = bacaPending();
+      if (latest[name]?.payload === entry.payload && latest[name]?.version === entry.version) delete latest[name];
+      else if (latest[name]) latest[name].version = savedVersion;
+      localStorage.setItem(kunciPending(), JSON.stringify(latest));
+    }
+    statusSinkronisasi('Data tersimpan di server');
+    return true;
+  } catch (error) {
+    statusSinkronisasi(error.code == '40001' ? 'Konflik data: perubahan dari perangkat lain. Unduh cadangan sebelum memuat versi server.' : 'Belum tersimpan di server', true);
+    console.error('Pengiriman data ke server gagal:', error.message);
+    return false;
+  }
+}
+
+async function muatDataAwan(user) {
+  const { data, error } = await cloudClient.from('user_app_data')
+    .select('table_name,payload,version').eq('user_id', user.id);
+  if (error) throw error;
+  const pending = bacaPending();
+  const dataAwan = new Map((data || []).map(row => [row.table_name, { ...row, payload: validasiRows(row.table_name, row.payload) }]));
+  let migrasiLokalLama = false;
+
+  if (!dataAwan.size && !Object.keys(pending).length) {
+    const lokalLama = {};
+    let adaDataLokal = false;
+    for (const name of DB.daftar) {
+      try {
+        const value = JSON.parse(localStorage.getItem('harizma_' + name) || 'null');
+        if (Array.isArray(value)) { lokalLama[name] = validasiRows(name, value); adaDataLokal ||= value.length > 0; }
+      } catch { /* Abaikan cache lama yang rusak. */ }
+    }
+    if (adaDataLokal && confirm('Data lama di perangkat ditemukan. Pindahkan data ini ke akun Supabase Anda?')) {
+      migrasiLokalLama = true;
+      applyingCloud = true;
+      for (const name of DB.daftar) DB.simpan(name, lokalLama[name] || []);
+      applyingCloud = false;
+      for (const name of DB.daftar) pending[name] = { payload: JSON.stringify(lokalLama[name] || []), version: null };
+      localStorage.setItem(kunciPending(), JSON.stringify(pending));
+    } else {
+      DB.inisialisasi();
+      for (const name of DB.daftar) pending[name] = { payload: JSON.stringify(DB.ambil(name)), version: null };
+      localStorage.setItem(kunciPending(), JSON.stringify(pending));
+    }
+  }
+
+  applyingCloud = true;
+  for (const name of DB.daftar) {
+    const row = dataAwan.get(name);
+    cloudVersions[name] = row?.version ?? null;
+    const value = Object.prototype.hasOwnProperty.call(pending, name)
+      ? JSON.parse(pending[name].payload)
+      : (row?.payload || []);
+    localStorage.setItem(DB.kunci(name), JSON.stringify(value));
+  }
+  applyingCloud = false;
+  cloudReady = true;
+  const tersinkron = await cloudFlush();
+  if (migrasiLokalLama && tersinkron) {
+    for (const name of DB.daftar) localStorage.removeItem('harizma_' + name);
+  }
+}
+
+async function ambilVersiCloud() {
+  if (!cloudUser || !confirm('Data versi server akan menggantikan perubahan lokal yang berkonflik. Cadangan lokal akan diunduh terlebih dahulu. Lanjutkan?')) return;
+  eksporData();
+  cloudReady = false;
+  cloudVersions = {};
+  localStorage.removeItem(kunciPending());
+  try {
+    await muatDataAwan(cloudUser);
+    await load();
+    await go(cur);
+  } catch (error) {
+    cloudReady = false;
+    statusSinkronisasi('Gagal memuat versi server', true);
+    toast(error.message, 1);
+  }
+}
+
+async function tarikDataAwan() {
+  if (!cloudReady || !cloudClient || !cloudUser || cloudInFlight) return;
+  const { data, error } = await cloudClient.from('user_app_data').select('table_name,payload,version').eq('user_id', cloudUser.id);
+  if (error) return statusSinkronisasi('Gagal memuat perubahan dari server', true);
+  const pending = bacaPending();
+  let berubah = false;
+  applyingCloud = true;
+  try {
+    for (const row of data || []) {
+      const payload = JSON.stringify(validasiRows(row.table_name, row.payload));
+      if (Object.prototype.hasOwnProperty.call(pending, row.table_name)) continue;
+      cloudVersions[row.table_name] = row.version;
+      if (localStorage.getItem(DB.kunci(row.table_name)) !== payload) {
+        localStorage.setItem(DB.kunci(row.table_name), payload);
+        berubah = true;
+      }
+    }
+  } catch (error) {
+    statusSinkronisasi('Data dari server tidak valid', true);
+    console.error(error);
+    return;
+  } finally {
+    applyingCloud = false;
+  }
+  if (berubah) { await load(); await go(cur); }
+}
+
+function tampilkanAkun(user) {
+  document.body.classList.remove('auth-locked');
+  $('#sessionActions').innerHTML = `<span id="syncState" aria-live="polite">Data tersimpan di server</span> <button id="resolveConflict" class="alt" type="button" hidden>Muat data server</button> <span>${esc(user.email || '')}</span> <button id="signOut" class="alt" type="button">Keluar</button>`;
+  $('#resolveConflict').onclick = ambilVersiCloud;
+  $('#signOut').onclick = async () => {
+    if (!await cloudFlush()) return toast('Data belum tersimpan di server. Periksa koneksi sebelum keluar.', 1);
+    if (!confirm('Keluar dari akun ini? Salinan sementara akun ini akan dihapus dari perangkat.')) return;
+    const userId = UID;
+    const { error } = await cloudClient.auth.signOut();
+    if (error) return toast('Gagal keluar: ' + error.message, 1);
+    for (const name of DB.daftar) localStorage.removeItem('harizma_' + userId + '_' + name);
+    localStorage.removeItem('harizma_' + userId + '_pending');
+    cloudReady = false;
+    cloudUser = null;
+    UID = 'guest';
+    localStorage.removeItem('harizma_' + userId + '_versions');
+    location.reload();
+  };
+}
+
+function halamanAuth(pesanStatus = '') {
+  document.body.classList.add('auth-locked');
+  $('#nav').innerHTML = '';
+  $('#sessionActions').innerHTML = '';
+  const config = window.HARIZMA_SUPABASE_CONFIG;
+  const siap = window.supabase?.createClient && config?.url?.startsWith('https://') && config?.anonKey && !config.anonKey.includes('YOUR_');
+  $('#main').innerHTML = `<div class="card" style="max-width:460px;margin:32px auto;">
+    <h2>Masuk ke HARIZMA ONLINE</h2>
+    ${!siap ? '<div class="warn">Konfigurasi Supabase belum diisi. Lengkapi URL proyek dan kunci publik (publishable/anon) di supabase-config.js.</div>' : ''}
+    <p id="authMessage" class="mut">${esc(pesanStatus || 'Data POS akan disimpan di akun Anda pada server Supabase.')}</p>
+    <form id="authForm">
+      <label>Email<input name="email" type="email" autocomplete="email" required></label>
+      <label>Kata sandi<input name="password" type="password" autocomplete="current-password" minlength="8" required></label>
+      <button id="authSubmit" type="submit" ${siap ? '' : 'disabled'}>Masuk</button>
+      <button id="authMode" class="alt" type="button" ${siap ? '' : 'disabled'}>Buat Akun</button>
+    </form>
+  </div>`;
+  if (!siap) return;
+  cloudClient ||= window.supabase.createClient(config.url, config.anonKey, {
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+  });
+  let daftar = false;
+  $('#authMode').onclick = () => {
+    daftar = !daftar;
+    $('#authSubmit').textContent = daftar ? 'Daftar' : 'Masuk';
+    $('#authMode').textContent = daftar ? 'Kembali ke Masuk' : 'Buat Akun';
+    $('[name="password"]').autocomplete = daftar ? 'new-password' : 'current-password';
+  };
+  $('#authForm').onsubmit = async event => {
+    event.preventDefault();
+    const button = $('#authSubmit');
+    button.disabled = true;
+    try {
+      const credentials = Object.fromEntries(new FormData(event.currentTarget));
+      const response = daftar
+        ? await cloudClient.auth.signUp(credentials)
+        : await cloudClient.auth.signInWithPassword(credentials);
+      if (response.error) $('#authMessage').textContent = response.error.message;
+      else if (daftar && !response.data.session) $('#authMessage').textContent = 'Periksa email untuk konfirmasi akun, lalu masuk.';
+      else if (response.data.session) await aktifkanAkun(response.data.session.user);
+    } catch (error) {
+      $('#authMessage').textContent = 'Gagal terhubung: ' + error.message;
+    } finally {
+      if (button.isConnected) button.disabled = false;
+    }
+  };
+}
+
+async function aktifkanAkun(user) {
+  if (cloudReady && cloudUser?.id == user.id) return;
+  UID = user.id;
+  cloudUser = user;
+  cloudReady = false;
+  try { cloudVersions = JSON.parse(localStorage.getItem(kunciVersi()) || '{}'); }
+  catch { cloudVersions = {}; }
+  tampilkanAkun(user);
+  try {
+    await muatDataAwan(user);
+    await load();
+    buatMenu();
+    await go('kirim');
+  } catch (error) {
+    const punyaCache = DB.daftar.some(name => localStorage.getItem(DB.kunci(name)) != null);
+    if (user && punyaCache) {
+      cloudReady = true;
+      tampilkanAkun(user);
+      statusSinkronisasi('Tanpa koneksi: perubahan menunggu pengiriman', true);
+      await load();
+      buatMenu();
+      await go('kirim');
+    } else {
+      cloudReady = false;
+      halamanAuth('Gagal memuat data cloud: ' + error.message);
+    }
+  }
+}
+const kdl = p => p.kadaluarsa ? Math.ceil((new Date(p.kadaluarsa + 'T00:00') - new Date()) / 86400000) : null;
+const pn = id => D.pelanggan?.find(x => x.id == id)?.nama_toko || '(dihapus)';
+const bayar = id => sum(D.bayar?.filter(y => y.pengiriman_id == id) || [], y => y.jumlah);
+
+let installPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  installPrompt = e;
+  $('#ins').hidden = false;
+});
+$('#ins').addEventListener('click', async () => {
+  if (!installPrompt) return;
+  installPrompt.prompt();
+  await installPrompt.userChoice;
+  installPrompt = null;
+  $('#ins').hidden = true;
+});
+window.addEventListener('appinstalled', () => { $('#ins').hidden = true; });
+window.addEventListener('online', () => { cloudFlush(); });
+window.addEventListener('focus', () => { tarikDataAwan(); });
+
+setInterval(() => {
+  $('#jam').textContent = new Date().toLocaleString('id-ID', { dateStyle:'full', timeStyle:'medium' });
+}, 1000);
+
+
+async function semua(tabel) { return DB.ambil(tabel); }
+async function load() {
+  try {
+    const R = await Promise.all([
+      semua('produk'), semua('pelanggan'), semua('pengiriman'),
+      semua('pengiriman_item'), semua('pembelian'), semua('pembayaran'), semua('usaha')
+    ]);
+    R.forEach((rows, index) => validasiRows(DB.daftar[index], rows));
+    D = {
+      produk: R[0].sort((a, b) => a.nama.localeCompare(b.nama)),
+      pelanggan: R[1].sort((a, b) => a.nama_toko.localeCompare(b.nama_toko)),
+      kirim: R[2], item: R[3], beli: R[4], bayar: R[5],
+      usaha: R[6][0] || { nama: 'HARIZMA ONLINE', alamat: '', kontak: '' }
+    };
+    syncCart();
+    return true;
+  } catch(e) {
+    toast('Gagal memuat data: ' + e.message, 1);
+    return false;
+  }
+}
+const refresh = async () => { if (await load()) go(cur); };
+const pesan = e => e?.message || String(e);
+function syncCart() {
+  if (!D.produk) return;
+  cart = cart.filter(c => D.produk.some(p => p.id == c.id))
+    .map(c => {
+      const p = D.produk.find(x => x.id == c.id);
+      return { ...c, nama: p.nama, harga_jual: p.harga_jual, qty: Math.min(c.qty, p.stok) };
+    }).filter(c => c.qty > 0);
+}
+
+// =====================================================
+// 📝 BAGIAN 4: FORMULIR MODAL
+// =====================================================
+function form(judul, F, v, simpanFungsi) {
+  const m = document.createElement('div');
+  m.className = 'modal';
+  m.innerHTML = `<form class="box">
+    <h3>${esc(judul)}</h3>
+    ${F.map(([k, l, t, r, o]) => {
+      let inputHtml = '';
+      if (t == 'select') {
+        inputHtml = `<select name="${k}">${o.map(([a, b]) =>
+          `<option value="${a}" ${v[k] == a ? 'selected' : ''}>${esc(b)}</option>`
+        ).join('')}</select>`;
+      } else if (t == 'area') {
+        inputHtml = `<textarea name="${k}" rows="2">${esc(v[k] || '')}</textarea>`;
+      } else if (t == 'file') {
+        inputHtml = `<input name="${k}" type="file" accept="image/*">${v[k] ? `<img class="foto" src="${esc(v[k])}" alt="Foto produk" style="width:100px;height:80px;object-fit:cover;margin-top:8px;">` : ''}`;
+      } else {
+        inputHtml = `<input name="${k}" type="${t}" value="${esc(v[k] || '')}" ${t == 'number' ? 'min="0" step="any"' : ''}>`;
+      }
+      return `<label>${esc(l)}${r ? ' *' : ''}${inputHtml}</label>`;
+    }).join('')}
+    <button type="submit">Simpan</button>
+    <button type="button" class="alt" onclick="this.closest('.modal').remove()">Batal</button>
+  </form>`;
+  m.querySelector('form').onsubmit = async e => {
+    e.preventDefault();
+    const f = new FormData(e.target), o = {};
+    for (const [k, l, t, r] of F) {
+      if (t == 'file') {
+        const file = f.get(k);
+        o[k] = file?.size ? await kompresFoto(file) : (v[k] || '');
+        continue;
+      }
+      let x = (f.get(k) || '') + '';
+      if (t != 'password') x = x.trim();
+      if (r && !x) return toast(l + ' wajib diisi', 1);
+      if (t == 'tel' && x && !/^[0-9+\-\s]{6,16}$/.test(x)) return toast('Nomor telepon tidak valid', 1);
+      o[k] = x;
+    }
+    try {
+      await simpanFungsi(o);
+      m.remove();
+      toast('Tersimpan ✅');
+      await refresh();
+    } catch(err) {
+      toast(err.message, 1);
+    }
+  };
+  document.body.append(m);
+}
+
+function kompresFoto(file) {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith('image/')) return reject(new Error('File harus berupa gambar'));
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Gagal membaca foto'));
+    reader.onload = () => {
+      const image = new Image();
+      image.onerror = () => reject(new Error('Foto tidak dapat dibuka'));
+      image.onload = () => {
+        const scale = Math.min(1, 720 / Math.max(image.width, image.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(image.width * scale);
+        canvas.height = Math.round(image.height * scale);
+        canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.78));
+      };
+      image.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// =====================================================
+// 🧾 BAGIAN 5: KERANJANG & NOTA
+// =====================================================
+function tiles() {
+  if (!D.produk) return '';
+  const query = qs.trim().toLocaleLowerCase('id');
+  return D.produk.filter(p => !query || `${p.nama} ${p.kode}`.toLocaleLowerCase('id').includes(query)).map(p => {
+    const q = cart.find(c => c.id == p.id)?.qty || 0;
+    return `<button class="tile ${q ? 'in' : ''}" onclick="tambahKeranjang('${p.id}')">
+      ${p.foto ? `<img class="foto" src="${esc(p.foto)}" alt="">` : '<span class="ic">📦</span>'}
+      <span>${esc(p.nama)}</span>
+      <span class="hg">${rp(p.harga_jual)}</span>
+      <small>Stok: ${p.stok}</small>
+      ${q ? `<span class="bd">${q}</span>` : ''}
+    </button>`;
+  }).join('');
+}
+function cari() { const el = $('#pg'); if(el) el.innerHTML = tiles(); }
+function scanKode() {
+  const kode = $('#cariBarang')?.value.trim().toLocaleLowerCase('id');
+  if (!kode) return;
+  const produk = D.produk.find(p => String(p.kode).toLocaleLowerCase('id') == kode);
+  if (produk) {
+    qs = '';
+    $('#cariBarang').value = '';
+    cari();
+    tambahKeranjang(produk.id);
+  } else {
+    qs = $('#cariBarang').value;
+    cari();
+    toast('Barcode tidak ditemukan', 1);
+  }
+}
+
+async function mulaiScanner() {
+  if (!('BarcodeDetector' in window)) return toast('Scanner kamera tidak didukung browser ini. Gunakan scanner USB/Bluetooth.', 1);
+  if (!navigator.mediaDevices?.getUserMedia) return toast('Kamera memerlukan HTTPS atau localhost', 1);
+  try {
+    const formats = await BarcodeDetector.getSupportedFormats();
+    const pilihan = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39'].filter(x => formats.includes(x));
+    if (!pilihan.length) return toast('Format barcode tidak didukung browser ini', 1);
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = '<div class="box"><video class="scanner-video" playsinline muted></video><button class="alt" onclick="hentikanScanner()">Tutup Scanner</button></div>';
+    document.body.append(modal);
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } } });
+    const video = modal.querySelector('video');
+    video.srcObject = stream;
+    await video.play();
+    scanner = { stream, video, detector: new BarcodeDetector({ formats: pilihan }), active: true, busy: false };
+    requestAnimationFrame(bacaFrameBarcode);
+  } catch (error) {
+    hentikanScanner();
+    toast('Kamera tidak dapat dibuka: ' + error.message, 1);
+  }
+  simpanVersi();
+}
+
+async function bacaFrameBarcode() {
+  if (!scanner?.active) return;
+  if (!scanner.busy && scanner.video.readyState >= 2) {
+    scanner.busy = true;
+    try {
+      const hasil = await scanner.detector.detect(scanner.video);
+      if (hasil.length) {
+        $('#cariBarang').value = hasil[0].rawValue;
+        hentikanScanner();
+        scanKode();
+        return;
+      }
+    } catch (error) {
+      hentikanScanner();
+      toast('Gagal membaca barcode: ' + error.message, 1);
+      return;
+    } finally {
+      if (scanner) scanner.busy = false;
+    }
+  }
+  requestAnimationFrame(bacaFrameBarcode);
+}
+
+function hentikanScanner() {
+  if (scanner) {
+    scanner.active = false;
+    scanner.stream.getTracks().forEach(track => track.stop());
+    scanner = null;
+  }
+  document.querySelectorAll('.scanner-video').forEach(video => video.closest('.modal')?.remove());
+}
+function tambahKeranjang(id) {
+  const p = D.produk.find(x => x.id == id);
+  if (!p || p.stok < 1) return toast('Stok habis', 1);
+  const c = cart.find(x => x.id == id);
+  if (c && c.qty >= p.stok) return toast('Jumlah melebihi stok tersedia', 1);
+  c ? c.qty++ : cart.push({ id, nama: p.nama, harga_jual: p.harga_jual, qty: 1 });
+  const el = $('#pg'); if(el) el.innerHTML = tiles();
+  renderCart();
+}
+function kurangKeranjang(id) {
+  const c = cart.find(x => x.id == id);
+  if (c) { c.qty--; if (c.qty <= 0) cart = cart.filter(x => x.id != id); }
+  const el = $('#pg'); if(el) el.innerHTML = tiles();
+  renderCart();
+}
+function ubahQty(id, val) {
+  const c = cart.find(x => x.id == id);
+  const p = D.produk.find(x => x.id == id);
+  if (c && p) {
+    c.qty = Math.min(p.stok, Math.max(1, parseInt(val) || 1));
+    if (c.qty < 1) cart = cart.filter(x => x.id != id);
+  }
+  renderCart();
+}
+function renderCart() {
+  const el = $('#cart'); if(!el) return;
+  const t = totalNota();
+  el.innerHTML = cart.map(c => `<div class="ci">
+    <div class="cn"><div>${esc(c.nama)}</div><small>${rp(c.harga_jual)} × ${c.qty}</small></div>
+    <div class="qc">
+      <button type="button" onclick="kurangKeranjang('${c.id}')">−</button>
+      <input type="number" value="${c.qty}" min="1" onchange="ubahQty('${c.id}', this.value)">
+      <button type="button" onclick="tambahKeranjang('${c.id}')">+</button>
+    </div>
+    <div class="r">${rp(c.qty * c.harga_jual)}</div>
+  </div>`).join('') + `<div class="tot"><strong>Total:</strong><strong>${rp(t)}</strong></div>`;
+}
+function totalNota() { return sum(cart, c => c.qty * c.harga_jual); }
+function kosong() { cart = []; renderCart(); const el = $('#pg'); if(el) el.innerHTML = tiles(); }
+
+function showNota(n) {
+  const u = D.usaha;
+  const m = document.createElement('div');
+  m.className = 'modal';
+  m.innerHTML = `<div class="box nota-box">
+    <h3>${esc(u?.nama || 'HARIZMA ONLINE')}</h3>
+    <small>${esc(u?.alamat || '')} ${esc(u?.kontak || '')}</small><hr>
+    <b>NOTA #${n.no}</b><br>
+    Tanggal: ${tg(n.tanggal)}<br>
+    Pelanggan: ${esc(n.pel)}
+    <table style="width:100%;margin-top:12px;">
+      <tr><th>Barang</th><th>Jml</th><th class="r">Harga</th><th class="r">Subtotal</th></tr>
+      ${n.items.map(i => `<tr>
+        <td>${esc(i.nama)}</td>
+        <td>${i.qty}</td>
+        <td class="r">${rp(i.harga_jual)}</td>
+        <td class="r">${rp(i.qty * i.harga_jual)}</td>
+      </tr>`).join('')}
+    </table>
+    <h3 style="margin-top:16px;">Total: ${rp(n.total)}</h3>
+    <p>Status: <b>${n.status}</b></p>
+    ${n.jatuhTempo ? `<p>Jatuh tempo: ${tg(n.jatuhTempo)}</p>` : ''}
+    ${n.dibayar ? `<p>Sudah dibayar: ${rp(n.dibayar)}<br>Sisa: ${rp(n.sisa)}</p>` : ''}
+    <div class="noprint" style="margin-top:16px;">
+      <button onclick="window.print()">🖨 Cetak / Simpan PDF</button>
+      <button class="alt" onclick="cetakThermal(58)">Cetak 58mm</button>
+      <button class="alt" onclick="cetakThermal(80)">Cetak 80mm</button>
+      <button class="alt" onclick="this.closest('.modal').remove()">Tutup</button>
+    </div>
+  </div>`;
+  document.body.append(m);
+}
+function nota(id) {
+  const k = D.kirim.find(x => x.id == id);
+  if (!k) return;
+  showNota({
+    no: id.slice(0, 8).toUpperCase(),
+    tanggal: k.tanggal,
+    pel: pn(k.pelanggan_id),
+    items: D.item.filter(i => i.pengiriman_id == id),
+    total: k.total,
+    status: statusKirim(k),
+    jatuhTempo: k.jatuh_tempo,
+    dibayar: jumlahTerbayar(k),
+    sisa: Math.max(0, Number(k.total || 0) - jumlahTerbayar(k))
+  });
+}
+
+function aturJatuhTempo(id) {
+  const k = D.kirim.find(x => x.id == id);
+  if (!k || k.status == 'lunas') return;
+  form('Atur Jatuh Tempo', [['jatuh_tempo', 'Tanggal Jatuh Tempo', 'date', true]], { jatuh_tempo: k.jatuh_tempo || '' }, async o => {
+    if (o.jatuh_tempo < k.tanggal) throw new Error('Jatuh tempo tidak boleh sebelum tanggal transaksi');
+    k.jatuh_tempo = o.jatuh_tempo;
+    DB.simpan('pengiriman', D.kirim);
+  });
+}
+
+function catatPembayaran(id) {
+  const k = D.kirim.find(x => x.id == id);
+  if (!k || k.status == 'lunas') return;
+  const sisa = Math.max(0, Number(k.total || 0) - jumlahTerbayar(k));
+  if (!sisa) return toast('Nota sudah lunas', 1);
+  form('Catat Pembayaran', [['jumlah', `Jumlah (sisa ${rp(sisa)})`, 'number', true]], { jumlah: sisa }, async o => {
+    const jumlah = Number(o.jumlah);
+    if (!Number.isFinite(jumlah) || jumlah <= 0 || jumlah > sisa) throw new Error('Jumlah pembayaran harus lebih dari 0 dan tidak melebihi sisa piutang');
+    D.bayar.push({ id: 'b' + Date.now(), pengiriman_id: id, tanggal: hari(), jumlah });
+    DB.simpan('pembayaran', D.bayar);
+  });
+}
+
+function cetakThermal(lebar) {
+  document.body.classList.add('thermal-print', lebar == 58 ? 'thermal-58' : 'thermal-80');
+  window.addEventListener('afterprint', () => document.body.classList.remove('thermal-print', 'thermal-58', 'thermal-80'), { once: true });
+  window.print();
+}
+
+function jumlahTerbayar(k) {
+  return k.status == 'lunas' ? Number(k.total || 0) : bayar(k.id);
+}
+
+function statusKirim(k) {
+  const terbayar = jumlahTerbayar(k), sisa = Math.max(0, Number(k.total || 0) - terbayar);
+  if (!sisa) return 'LUNAS';
+  return terbayar ? `TERBAYAR SEBAGIAN, SISA ${rp(sisa)}` : 'PIUTANG';
+}
+
+// =====================================================
+// 📦 BAGIAN 6: MODUL-MODUL APLIKASI
+// =====================================================
+
+// --- Pengiriman Barang ---
+async function simpanKirim() {
+  if (sibuk) return;
+  const st = $('#ks').value, jt = $('#kj').value || null, tgl = $('#kt').value;
+  if (!$('#kp').value) return toast('Pilih pelanggan dulu', 1);
+  if (!tgl) return toast('Isi tanggal pengiriman', 1);
+  if (!cart.length) return toast('Nota masih kosong', 1);
+  if (cart.some(c => !D.produk.some(p => p.id == c.id && Number(p.stok) >= c.qty))) return toast('Jumlah barang melebihi stok tersedia', 1);
+  if (st == 'piutang' && jt < tgl) return toast('Jatuh tempo tidak boleh sebelum tanggal pengiriman', 1);
+  
+  sibuk = true;
+  const bt = $('.acts button:nth-child(2)');
+  bt.disabled = true;
+  
+  try {
+    const id = 'k' + Date.now();
+    const total = totalNota();
+    
+    // Simpan pengiriman
+    D.kirim.unshift({
+      id,
+      pelanggan_id: $('#kp').value,
+      tanggal: tgl,
+      status: st,
+      jatuh_tempo: st == 'piutang' ? jt : null,
+      total,
+      hpp: sum(cart, c => c.qty * (D.produk.find(p => p.id == c.id)?.harga_beli || 0))
+    });
+    DB.simpan('pengiriman', D.kirim);
+    
+    // Simpan item & kurangi stok
+    cart.forEach(c => {
+      D.item.push({
+        id: 'i' + Date.now() + Math.random(),
+        pengiriman_id: id,
+        produk_id: c.id,
+        nama: c.nama,
+        qty: c.qty,
+        harga_jual: c.harga_jual
+      });
+      const p = D.produk.find(x => x.id == c.id);
+      if (p) p.stok = Math.max(0, p.stok - c.qty);
+    });
+    DB.simpan('pengiriman_item', D.item);
+    DB.simpan('produk', D.produk);
+    
+    cart = [];
+    await refresh();
+    toast('Pengiriman tersimpan ✅');
+    nota(id);
+  } catch (e) {
+    toast(pesan(e), 1);
+  } finally {
+    sibuk = false;
+    bt.disabled = false;
+  }
+}
+
+const cetakDraft = () => {
+  if (!cart.length) return toast('Nota masih kosong', 1);
+  const st = $('#ks').value;
+  showNota({
+    no: 'DRAFT',
+    tanggal: $('#kt').value,
+    pel: $('#kp').value ? $('#kp').selectedOptions[0].text : '-',
+    items: cart,
+    total: totalNota(),
+    status: (st == 'lunas' ? 'LUNAS' : 'BELUM DIBAYAR') + ' (belum disimpan)'
+  });
+};
+
+// --- Fungsi Edit & Hapus Umum ---
+async function hapusTabel(namaTabel, id, pesanKonfirmasi = 'Yakin dihapus?') {
+  if (!confirm(pesanKonfirmasi)) return;
+  const namaData = { pengiriman: 'kirim', pengiriman_item: 'item', pembelian: 'beli', pembayaran: 'bayar' }[namaTabel] || namaTabel;
+  if (!Array.isArray(D[namaData])) return toast('Data tidak ditemukan', 1);
+  if (namaTabel == 'pengiriman') {
+    const itemTerhapus = D.item.filter(x => x.pengiriman_id == id);
+    itemTerhapus.forEach(i => {
+      const p = D.produk.find(x => x.id == i.produk_id);
+      if (p) p.stok = Number(p.stok || 0) + Number(i.qty || 0);
+    });
+    D.item = D.item.filter(x => x.pengiriman_id != id);
+    D.bayar = D.bayar.filter(x => x.pengiriman_id != id);
+    DB.simpan('pengiriman_item', D.item);
+    DB.simpan('pembayaran', D.bayar);
+    DB.simpan('produk', D.produk);
+  }
+  D[namaData] = D[namaData].filter(x => x.id !== id);
+  DB.simpan(namaTabel, D[namaData]);
+  await refresh();
+  toast('Terhapus ✅');
+}
+
+function edt(namaTabel, kolom, judul, id = null) {
+  const data = id ? D[namaTabel].find(x => x.id == id) : {};
+  form(judul, kolom, data, async o => {
+    if (id) {
+      Object.assign(data, o);
+    } else {
+      o.id = Date.now().toString();
+      D[namaTabel].unshift(o);
+    }
+    DB.simpan(namaTabel, D[namaTabel]);
+  });
+}
+
+// --- Kolom Formulir ---
+const kolomProduk = [
+  ['kode', 'Kode Barang', 'text', true],
+  ['nama', 'Nama Barang', 'text', true],
+  ['foto', 'Foto Produk', 'file', false],
+  ['harga_beli', 'Harga Beli', 'number', true],
+  ['harga_jual', 'Harga Jual', 'number', true],
+  ['stok', 'Stok Awal', 'number', true],
+  ['stok_min', 'Stok Minimum', 'number', false],
+  ['kadaluarsa', 'Tanggal Kadaluarsa', 'date', false],
+  ['keterangan', 'Keterangan', 'area', false]
+];
+
+const kolomPelanggan = [
+  ['nama_toko', 'Nama Toko', 'text', true],
+  ['pemilik', 'Nama Pemilik', 'text', false],
+  ['alamat', 'Alamat', 'area', false],
+  ['telepon', 'No. Telepon', 'tel', false],
+  ['keterangan', 'Catatan', 'area', false]
+];
+
+const kolomPembelian = [
+  ['tanggal', 'Tanggal', 'date', true],
+  ['nama_toko', 'Dari Toko/Supplier', 'text', true],
+  ['keterangan', 'Keterangan', 'area', false]
+];
+
+// --- Tampilan Halaman ---
+function halamanPengiriman() {
+  const opsiPelanggan = D.pelanggan.map(p => [p.id, p.nama_toko]);
+  $('#main').innerHTML = `
+    <div class="pos">
+      <div class="card">
+        <h2>Pilih Barang</h2>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:6px;margin-bottom:12px;">
+          <input type="search" id="cariBarang" placeholder="Cari / scan barcode..." style="margin:0;" oninput="qs=this.value;cari()" onkeydown="if(event.key==='Enter'){event.preventDefault();scanKode()}">
+          <button type="button" class="alt" title="Scan barcode dengan kamera" onclick="mulaiScanner()">📷</button>
+        </div>
+        <div id="pg" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:8px;">${tiles()}</div>
+      </div>
+      <div class="card">
+        <h2>Nota Pengiriman</h2>
+        <div class="g" style="margin-bottom:12px;">
+          <div>
+            <label>Pelanggan *</label>
+            <select id="kp" required>
+              <option value="">-- Pilih Pelanggan --</option>
+              ${opsiPelanggan.map(([id,n])=>`<option value="${id}">${esc(n)}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label>Tanggal *</label>
+            <input type="date" id="kt" value="${hari()}" required>
+          </div>
+          <div>
+            <label>Status</label>
+            <select id="ks" onchange="$('#kj-wrap').style.display=this.value=='piutang'?'block':'none'">
+              <option value="lunas">LUNAS</option>
+              <option value="piutang">PIUTANG</option>
+            </select>
+          </div>
+          <div id="kj-wrap" style="display:none;">
+            <label>Jatuh Tempo</label>
+            <input type="date" id="kj">
+          </div>
+        </div>
+        <div id="cart" style="margin:12px 0;"></div>
+        <div class="acts">
+          <button class="alt" onclick="kosong()">🗑 Kosongkan</button>
+          <button onclick="simpanKirim()">✅ Simpan Nota</button>
+          <button class="alt" onclick="cetakDraft()">🖨 Cetak Draft</button>
+        </div>
+      </div>
+    </div>`;
+  renderCart();
+}
+
+function halamanProduk() {
+  $('#main').innerHTML = `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h2>Daftar Produk</h2>
+        <button onclick="edt('produk', kolomProduk, 'Tambah Produk')">+ Tambah Produk</button>
+      </div>
+      <div class="tw">
+        <table>
+          <tr>
+            <th>Kode</th>
+            <th>Nama Barang</th>
+            <th style="text-align:right">Harga Beli</th>
+            <th style="text-align:right">Harga Jual</th>
+            <th style="text-align:center">Stok</th>
+            <th style="text-align:center">Kadaluarsa</th>
+            <th style="text-align:center;width:120px;">Aksi</th>
+          </tr>
+          ${D.produk.map(p=>`<tr>
+            <td>${esc(p.kode)}</td>
+            <td>${esc(p.nama)}</td>
+            <td class="r">${rp(p.harga_beli)}</td>
+            <td class="r">${rp(p.harga_jual)}</td>
+            <td style="text-align:center;font-weight:${p.stok<=p.stok_min?'bold;color:var(--b3261e)':'normal'}">${p.stok}</td>
+            <td style="text-align:center">${p.kadaluarsa?tg(p.kadaluarsa):'-'}</td>
+            <td style="text-align:center">
+              <button class="alt" style="padding:2px 6px;font-size:12px;" onclick="edt('produk', kolomProduk, 'Ubah Produk', '${p.id}')">Ubah</button>
+              <button class="bad" style="padding:2px 6px;font-size:12px;" onclick="hapusTabel('produk','${p.id}')">Hapus</button>
+            </td>
+          </tr>`).join('')}
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function halamanPelanggan() {
+  $('#main').innerHTML = `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h2>Daftar Pelanggan</h2>
+        <button onclick="edt('pelanggan', kolomPelanggan, 'Tambah Pelanggan')">+ Tambah Pelanggan</button>
+      </div>
+      <div class="tw">
+        <table>
+          <tr>
+            <th>Nama Toko</th>
+            <th>Pemilik</th>
+            <th>Alamat</th>
+            <th>Telepon</th>
+            <th style="text-align:center;width:120px;">Aksi</th>
+          </tr>
+          ${D.pelanggan.map(p=>`<tr>
+            <td>${esc(p.nama_toko)}</td>
+            <td>${esc(p.pemilik||'-')}</td>
+            <td>${esc(p.alamat||'-')}</td>
+            <td>${esc(p.telepon||'-')}</td>
+            <td style="text-align:center">
+              <button class="alt" style="padding:2px 6px;font-size:12px;" onclick="edt('pelanggan', kolomPelanggan, 'Ubah Pelanggan', '${p.id}')">Ubah</button>
+              <button class="bad" style="padding:2px 6px;font-size:12px;" onclick="hapusTabel('pelanggan','${p.id}')">Hapus</button>
+            </td>
+          </tr>`).join('')}
+        </table>
+      </div>
+    </div>
+  `;
+}
+function halamanRiwayat() {
+  $('#main').innerHTML = `
+    <div class="card">
+      <h2>Riwayat Pengiriman</h2>
+      <div class="tw">
+        <table>
+          <tr>
+            <th>No. Nota</th>
+            <th>Tanggal</th>
+            <th>Pelanggan</th>
+            <th style="text-align:right">Total</th>
+            <th style="text-align:center">Status</th>
+            <th style="text-align:center">Aksi</th>
+          </tr>
+          ${D.kirim.length?D.kirim.map(k=>`<tr>
+            <td><b>${k.id.slice(0,8).toUpperCase()}</b></td>
+            <td>${tg(k.tanggal)}</td>
+            <td>${pn(k.pelanggan_id)}</td>
+            <td class="r">${rp(k.total)}</td>
+            <td style="text-align:center;color:${statusKirim(k)=='LUNAS'?'green':'#b3261e'}">
+              ${statusKirim(k)=='LUNAS'?'✓ LUNAS':'⏳ '+statusKirim(k)}
+              ${statusKirim(k)!='LUNAS'?'<br><small>Jatuh: '+tg(k.jatuh_tempo)+'</small><br><small>Terbayar: '+rp(jumlahTerbayar(k))+'</small>':''}
+            </td>
+            <td style="text-align:center">
+              <button class="alt" style="padding:2px 6px;font-size:12px;" onclick="nota('${k.id}')">Lihat</button>
+              ${statusKirim(k)!='LUNAS'?`<button class="alt" style="padding:2px 6px;font-size:12px;" onclick="aturJatuhTempo('${k.id}')">Jatuh Tempo</button><button class="alt" style="padding:2px 6px;font-size:12px;" onclick="catatPembayaran('${k.id}')">Bayar</button>`:''}
+              <button class="bad" style="padding:2px 6px;font-size:12px;" onclick="hapusTabel('pengiriman','${k.id}','Hapus juga item penjualan?')">Hapus</button>
+            </td>
+          </tr>`).join(''):'<tr><td colspan="6" style="text-align:center;padding:20px;color:#6b7a70">Belum ada riwayat</td></tr>'}
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function halamanPengaturan() {
+  const u = D.usaha || { nama:'HARIZMA ONLINE', alamat:'', kontak:'' };
+  $('#main').innerHTML = `
+    <div class="card">
+      <h2>Pengaturan Usaha</h2>
+      <form onsubmit="simpanUsaha(event)">
+        <label>Nama Usaha</label>
+        <input type="text" id="u_nama" value="${esc(u.nama)}">
+        <label>Alamat</label>
+        <textarea id="u_alamat" rows="2">${esc(u.alamat)}</textarea>
+        <label>No. Telepon / Kontak</label>
+        <input type="text" id="u_kontak" value="${esc(u.kontak)}">
+        <button type="submit">Simpan</button>
+      </form>
+    </div>
+    <div class="card">
+      <h2>📦 Cadangan Data</h2>
+      <p style="color:#6b7a70;font-size:14px;margin-bottom:12px;">Simpan file ini untuk cadangan, atau pulihkan dari file cadangan.</p>
+      <button onclick="eksporData()">📤 Ekspor Data</button>
+      <button class="alt" onclick="document.getElementById('imporFile').click()">📥 Impor Data</button>
+      <input type="file" id="imporFile" accept=".json" style="display:none" onchange="imporData(event)">
+      <p style="color:#b3261e;font-size:13px;margin-top:16px;">⚠️ Impor data akan menimpa data yang ada saat ini.</p>
+    </div>
+  `;
+}
+
+async function simpanUsaha(e) {
+  e.preventDefault();
+  D.usaha = {
+    nama: $('#u_nama').value.trim(),
+    alamat: $('#u_alamat').value.trim(),
+    kontak: $('#u_kontak').value.trim()
+  };
+  DB.simpan('usaha', [D.usaha]);
+  toast('Pengaturan tersimpan ✅');
+}
+
+function eksporData() {
+  const semuaData = {
+    produk: DB.ambil('produk'),
+    pelanggan: DB.ambil('pelanggan'),
+    pengiriman: DB.ambil('pengiriman'),
+    pengiriman_item: DB.ambil('pengiriman_item'),
+    pembelian: DB.ambil('pembelian'),
+    pembayaran: DB.ambil('pembayaran'),
+    usaha: DB.ambil('usaha'),
+    dieksporPada: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(semuaData, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'harizma-cadangan-' + hari() + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Data diekspor ✅ Cek folder unduhan Anda');
+}
+
+async function imporData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) return toast('Ukuran file cadangan maksimal 10 MB', 1);
+  if (!confirm('⚠️ Data yang ada akan diganti dengan data dari file cadangan. Lanjutkan?')) return;
+  try {
+    const teks = await file.text();
+    const data = JSON.parse(teks);
+    if (!data || typeof data != 'object' || Array.isArray(data)) throw new Error('Format cadangan tidak valid');
+    const dataValid = {};
+    for (const name of DB.daftar) {
+      if (!Object.prototype.hasOwnProperty.call(data, name)) continue;
+      dataValid[name] = validasiRows(name, data[name]);
+    }
+    if (!Object.keys(dataValid).length) throw new Error('Tidak ada tabel aplikasi yang ditemukan');
+    for (const [name, rows] of Object.entries(dataValid)) DB.simpan(name, rows);
+    if (!await cloudFlush()) throw new Error('Data lokal tersimpan, tetapi belum tersinkron ke cloud. Periksa koneksi dan coba lagi.');
+    await refresh();
+    toast('Data berhasil dipulihkan ✅');
+  } catch(err) {
+    toast('Gagal memuat file: ' + err.message, 1);
+  }
+}
+
+// =====================================================
+// 🧭 NAVIGASI & ROUTING
+// =====================================================
+const MENU = [
+  { id:'kirim', nama:'📦 Pengiriman', hal:halamanPengiriman },
+  { id:'produk', nama:'📋 Produk', hal:halamanProduk },
+  { id:'pelanggan', nama:'👥 Pelanggan', hal:halamanPelanggan },
+  { id:'riwayat', nama:'📊 Riwayat', hal:halamanRiwayat },
+  { id:'pengaturan', nama:'⚙️ Pengaturan', hal:halamanPengaturan }
+];
+
+function buatMenu() {
+  $('#nav').innerHTML = MENU.map(m=>`<a href="#${m.id}" class="${cur==m.id?'on':''}" onclick="go('${m.id}');return false;">${m.nama}</a>`).join('');
+}
+
+async function go(halamanId) {
+  cur = halamanId;
+  const menu = MENU.find(m=>m.id==halamanId);
+  if (menu) {
+    buatMenu();
+    await menu.hal();
+  }
+}
+
+// =====================================================
+// 🚀 INISIALISASI AWAL
+// =====================================================
+(async function() {
+  if ('serviceWorker' in navigator && location.protocol != 'file:') {
+    navigator.serviceWorker.register('./sw.js').catch(e => console.warn('PWA offline tidak aktif:', e));
+  }
+  halamanAuth();
+  if (!cloudClient) return;
+  try {
+    const { data, error } = await cloudClient.auth.getSession();
+    if (error) throw error;
+    if (data.session) await aktifkanAkun(data.session.user);
+  } catch (error) {
+    halamanAuth('Gagal memeriksa sesi akun: ' + error.message);
+  }
+})();
+</script>
+
+</body>
+</html>

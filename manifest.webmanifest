@@ -1,0 +1,21 @@
+{
+  "id": "./pos.html",
+  "name": "HARIZMA ONLINE",
+  "short_name": "HARIZMA",
+  "description": "Aplikasi POS HARIZMA ONLINE",
+  "lang": "id",
+  "start_url": "./pos.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f3f8f8",
+  "theme_color": "#0f766e",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
